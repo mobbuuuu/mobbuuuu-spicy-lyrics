@@ -37,82 +37,96 @@ function getShardColors(baseColor: string): { shardColor: string; accentColor: s
   return { shardColor: baseColor, accentColor };
 }
 
+async function resolveBaseColor(): Promise<string> {
+  const mode = $shardsColorMode.get();
+  if (mode === "manual") return $shardsColor.get();
+  return getPaletteColor();
+}
+
+async function loadShardsComponent(): Promise<any> {
+  // Try WebGPU first, fall back to Canvas2D
+  if (navigator.gpu) {
+    try {
+      const adapter = await navigator.gpu.requestAdapter();
+      if (adapter) {
+        shardsLogger.debug("WebGPU available, using GPU shards");
+        const { default: AeroShards } = await import("./AeroShards.jsx");
+        return AeroShards;
+      }
+    } catch (e) {
+      shardsLogger.warn("WebGPU init failed, falling back to Canvas2D", e);
+    }
+  }
+  shardsLogger.debug("Using Canvas2D fallback shards");
+  const { default: Fallback } = await import("./AeroShardsFallback.jsx");
+  return Fallback;
+}
+
+function renderShards(
+  React: any,
+  ShardsComponent: any,
+  shardColor: string,
+  accentColor: string,
+  intro: boolean,
+) {
+  if (!reactRoot) return;
+  reactRoot.render(
+    React.createElement(ShardsComponent, {
+      shardColor,
+      accentColor,
+      backgroundColor: "transparent",
+      count: 800,
+      speed: 0.6,
+      glow: 0.3,
+      grain: 0.04,
+      vignette: 0.2,
+      depthOfField: 0.6,
+      mouseInteraction: false,
+      intro,
+      pulseOnClick: false,
+      holdToGather: false,
+      style: { position: "absolute", inset: 0, width: "100%", height: "100%" },
+    })
+  );
+}
+
+let cachedComponent: any = null;
+
 export async function applyAeroShardsBackground(host: HTMLElement): Promise<void> {
   removeAeroShards();
 
   const container = document.createElement("div");
   container.className = "spicy-dynamic-bg spicy-aero-shards";
   container.style.cssText = "position:absolute;inset:0;z-index:0;overflow:hidden;";
-  host.prepend(container);
+  host.appendChild(container);
   currentRoot = container;
 
   const React = await import("react");
   const ReactDOM = await import("react-dom/client");
-  const { default: AeroShards } = await import("./AeroShards.jsx");
 
-  const mode = $shardsColorMode.get();
-  let baseColor = $shardsColor.get();
-  if (mode === "auto") {
-    baseColor = await getPaletteColor();
+  if (!cachedComponent) {
+    cachedComponent = await loadShardsComponent();
   }
+
+  const baseColor = await resolveBaseColor();
   const { shardColor, accentColor } = getShardColors(baseColor);
 
   reactRoot = ReactDOM.createRoot(container);
-  reactRoot.render(
-    React.createElement(AeroShards, {
-      shardColor,
-      accentColor,
-      backgroundColor: "transparent",
-      count: 800,
-      speed: 0.6,
-      glow: 0.3,
-      grain: 0.04,
-      vignette: 0.2,
-      depthOfField: 0.6,
-      mouseInteraction: false,
-      intro: true,
-      pulseOnClick: false,
-      holdToGather: false,
-      style: { position: "absolute", inset: 0, width: "100%", height: "100%" },
-    })
-  );
+  renderShards(React, cachedComponent, shardColor, accentColor, true);
 
-  disposeListener = $shardsColorMode.listen(() => updateShardsColor());
-  const disposeColor = $shardsColor.listen(() => updateShardsColor());
-  const origDispose = disposeListener;
-  disposeListener = () => { origDispose(); disposeColor(); };
-}
+  const update = async () => {
+    if (!currentRoot || !reactRoot) return;
+    const R = await import("react");
+    const base = await resolveBaseColor();
+    const colors = getShardColors(base);
+    renderShards(R, cachedComponent, colors.shardColor, colors.accentColor, false);
+  };
 
-async function updateShardsColor() {
-  if (!currentRoot || !reactRoot) return;
-  const React = await import("react");
-  const { default: AeroShards } = await import("./AeroShards.jsx");
+  const d1 = $shardsColorMode.listen(update);
+  const d2 = $shardsColor.listen(update);
+  disposeListener = () => { d1(); d2(); };
 
-  const mode = $shardsColorMode.get();
-  let baseColor = $shardsColor.get();
-  if (mode === "auto") {
-    baseColor = await getPaletteColor();
-  }
-  const { shardColor, accentColor } = getShardColors(baseColor);
-
-  reactRoot.render(
-    React.createElement(AeroShards, {
-      shardColor,
-      accentColor,
-      backgroundColor: "transparent",
-      count: 800,
-      speed: 0.6,
-      glow: 0.3,
-      grain: 0.04,
-      vignette: 0.2,
-      depthOfField: 0.6,
-      mouseInteraction: false,
-      intro: false,
-      pulseOnClick: false,
-      holdToGather: false,
-      style: { position: "absolute", inset: 0, width: "100%", height: "100%" },
-    })
-  );
+  shardsLogger.debug("Aero Shards mounted", { shardColor, accentColor });
 }
 
 export function removeAeroShards() {

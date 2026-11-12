@@ -105,7 +105,7 @@ onAnimationFrame(() => {
 // removed once the CSS transition has finished, so rapid skips never stack up layers.
 
 /** Only the kinds created here, so a theme's own `.spicy-dynamic-bg` element is never swept away. */
-const OWN_LAYERS = ":scope > :is(canvas, .StaticBackground, .ColorBackground).spicy-dynamic-bg";
+const OWN_LAYERS = ":scope > :is(canvas, .StaticBackground, .ColorBackground, .spicy-aero-shards).spicy-dynamic-bg";
 
 /** The longest layer transition in spicy-dynamic-bg.css, for each look. */
 const layerSettleMs = () => (isRefined() ? 1500 : 1000);
