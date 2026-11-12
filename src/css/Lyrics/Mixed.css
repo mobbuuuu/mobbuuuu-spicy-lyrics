@@ -1022,10 +1022,30 @@
   -webkit-text-fill-color: transparent;
   text-shadow: 0 0 var(--BlurAmount, 0) rgba(255, 255, 255, 0.62) !important;
   pointer-events: none;
+  transition: text-shadow 0.5s ease-out;
 }
 
 #SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .line.Active .lyrics-sub-text {
   text-shadow: 0 0 0 rgba(255, 255, 255, 0.78) !important;
+}
+
+/* Synced romanization: each part sweeps left-to-right via --SL_RomanFill. */
+#SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .line .lyrics-romanization.SL_RomanSynced {
+  --SL_RomanLit: rgba(255, 255, 255, 0.92);
+  --SL_RomanDim: rgba(255, 255, 255, 0.42);
+  text-shadow: none !important;
+  filter: blur(calc(var(--BlurAmount, 0px) / 2));
+}
+
+#SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .line .SL_RomanSynced > .SL_RomanPart {
+  background-image: linear-gradient(
+    90deg,
+    var(--SL_RomanLit) calc(var(--SL_RomanFill, 0) * 130% - 30%),
+    var(--SL_RomanDim) calc(var(--SL_RomanFill, 0) * 130%)
+  ) !important;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 #SpicyLyricsPage.Lyrics_RomanizationEnabled .LyricsContainer .LyricsContent .line .lyrics-romanization {
@@ -1036,12 +1056,12 @@
   display: block;
 }
 
-/* LinesAllSung: lyrics drift upward, blur and fade when the song ends.
-   The transition must live on the base state so it animates when LinesAllSung lands. */
+/* Smooth fade when a line goes from Active to Sung. */
 #SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .line {
-  transition: filter 1.5s ease-out, transform 1.5s ease-out;
+  transition: opacity 0.6s ease-out, filter 1.5s ease-out, transform 1.5s ease-out;
 }
 
+/* LinesAllSung: lyrics drift upward, blur and fade when the song ends. */
 #SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent.LinesAllSung .line:not(.musical-line):not(.static) {
   filter: blur(8px);
   transform: translateY(-20px);

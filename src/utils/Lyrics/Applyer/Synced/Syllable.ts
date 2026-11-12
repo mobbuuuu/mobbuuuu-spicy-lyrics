@@ -28,7 +28,7 @@ import {
 import { CreateLyricsContainer, DestroyAllLyricsContainers } from "../CreateLyricsContainer.ts";
 import { StripZeroWidth } from "../Utils/StripZeroWidth.ts";
 import { PickDisplayText } from "../Utils/PickDisplayText.ts";
-import { appendSubText, buildSyllableRomanization } from "../Utils/AppendSubText.ts";
+import { appendSubText, buildSyllableRomanization, clearSyncedRows } from "../Utils/AppendSubText.ts";
 import { initLyricsVirtualizer } from "../../LyricsVirtualizer.ts";
 import { ApplySongCredits, MarkLastLineSide } from "../Credits/ApplyLyricsCredits.ts";
 import { EmitApply, EmitNotApplyed } from "../OnApply.ts";
@@ -89,6 +89,7 @@ const renderableSyllables = (syllables: SyllableData[]): SyllableData[] => {
 export function ApplySyllableLyrics(data: LyricsData, UseRomanized: boolean = false): void {
   if (!$lyricsContainerExists.get()) return;
   EmitNotApplyed();
+  clearSyncedRows();
 
   DestroyAllLyricsContainers();
   const LyricsContainerParent = PageContainer?.querySelector<HTMLElement>(
@@ -347,7 +348,7 @@ export function ApplySyllableLyrics(data: LyricsData, UseRomanized: boolean = fa
     });
 
     const leadRomanized = line.Lead.TransliteratedText || buildSyllableRomanization(line.Lead.Syllables);
-    appendSubText(lineElem, leadRomanized, line.Lead.TranslatedText);
+    appendSubText(lineElem, leadRomanized, line.Lead.TranslatedText, line.Lead.Syllables);
 
     if (line.Background) {
       line.Background.filter((bg) => !IsEmptySyllableGroup(bg)).forEach((bg) => {
@@ -462,7 +463,7 @@ export function ApplySyllableLyrics(data: LyricsData, UseRomanized: boolean = fa
         });
 
         const bgRomanized = bg.TransliteratedText || buildSyllableRomanization(bg.Syllables);
-        appendSubText(lineE, bgRomanized, bg.TranslatedText);
+        appendSubText(lineE, bgRomanized, bg.TranslatedText, bg.Syllables);
       });
     }
     if (arr[index + 1] && arr[index + 1].Lead.StartTime - line.Lead.EndTime >= getLyricsBetweenShow()) {
