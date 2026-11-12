@@ -389,10 +389,10 @@
 }
 
 #SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .line.Sung {
-  opacity: var(--Vocal-Sung-opacity);
+  opacity: 0 !important;
   --gradient-position: 100% !important;
-  filter: blur(4px);
-  transform: translateY(-8px);
+  filter: blur(8px);
+  transform: translateY(-15px);
 }
 
 /* #SpicyLyricsPage.SpicyRenderer.Podcast .LyricsContainer .LyricsContent .line.Sung {
