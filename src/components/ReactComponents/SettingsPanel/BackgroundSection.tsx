@@ -19,7 +19,7 @@ export const BACKGROUND_STYLE_LABELS: Record<BackgroundStyle, string> = {
   artist: "Artist Image",
   cover: "Cover Art",
   color: "Cover Colors",
-  shards: "Aero Shards (WebGPU)",
+  shards: "Aurora",
   none: "None (Transparent)",
 };
 
