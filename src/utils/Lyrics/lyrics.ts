@@ -1,5 +1,5 @@
 import { $lyricsContainerExists, $minimalLyricsMode, $seekFadeCompensation } from "../stores.ts";
-import { $romanization } from "../uiState.ts";
+import { $romanization, $translation } from "../uiState.ts";
 import Global from "../../components/Global/Global.ts";
 import { SpotifyPlayer } from "../../components/Global/SpotifyPlayer.ts";
 import { Lyrics } from "./Animator/Main.ts";
@@ -340,6 +340,13 @@ export let isRomanized = $romanization.get();
 export const setRomanizedStatus = (val: boolean) => {
   isRomanized = val;
   $romanization.set(val);
+};
+
+export let isTranslationEnabled = $translation.get();
+
+export const setTranslationStatus = (val: boolean) => {
+  isTranslationEnabled = val;
+  $translation.set(val);
 };
 
 export const preHiddenDotLineMs = 500;

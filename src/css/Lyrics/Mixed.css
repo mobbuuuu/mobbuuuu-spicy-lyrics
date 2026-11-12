@@ -1007,6 +1007,51 @@
   }
 }
 
+/* Sub-text: romanization and translation shown below each lyrics line.
+   Hidden by default; toggled via classes on #SpicyLyricsPage. */
+#SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .line .lyrics-sub-text {
+  flex-basis: 100%;
+  display: none;
+  font-size: 0.6em;
+  font-weight: 500 !important;
+  line-height: 1.3;
+  margin-top: 0.15em;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.6);
+  background-image: none !important;
+  background-clip: initial;
+  pointer-events: none;
+  cursor: default;
+}
+
+#SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .line.Active .lyrics-sub-text {
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.75);
+}
+
+#SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .line.Sung .lyrics-sub-text {
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.5);
+}
+
+#SpicyLyricsPage.Lyrics_RomanizationEnabled .LyricsContainer .LyricsContent .line .lyrics-romanization {
+  display: block;
+}
+
+#SpicyLyricsPage.Lyrics_TranslationEnabled .LyricsContainer .LyricsContent .line .lyrics-translation {
+  display: block;
+}
+
+/* LinesAllSung: lyrics drift upward, blur and fade when the song ends.
+   The transition must live on the base state so it animates when LinesAllSung lands. */
+#SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .line {
+  transition: filter 1.5s ease-out, transform 1.5s ease-out;
+}
+
+#SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent.LinesAllSung .line:not(.musical-line):not(.static) {
+  filter: blur(8px);
+  transform: translateY(-20px);
+  opacity: 0 !important;
+  transition: filter 1.5s ease-out, transform 1.5s ease-out, opacity 1.5s ease-out !important;
+}
+
 #SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .Credits {
   /* Follows the .LyricsContent width (`cqw`, it's a size container), capped at
      a ratio of the lyrics size. `em` is the parent's font-size, which the

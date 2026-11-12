@@ -22,6 +22,7 @@ import {
 import { CreateLyricsContainer, DestroyAllLyricsContainers } from "../CreateLyricsContainer.ts";
 import { StripZeroWidth } from "../Utils/StripZeroWidth.ts";
 import { PickDisplayText } from "../Utils/PickDisplayText.ts";
+import { appendSubText } from "../Utils/AppendSubText.ts";
 import { initLyricsVirtualizer } from "../../LyricsVirtualizer.ts";
 import { ApplySongCredits, MarkLastLineSide } from "../Credits/ApplyLyricsCredits.ts";
 import { EmitApply, EmitNotApplyed } from "../OnApply.ts";
@@ -33,6 +34,7 @@ interface LyricsLineData {
   StartTime: number;
   EndTime: number;
   TransliteratedText?: string;
+  TranslatedText?: string;
   OppositeAligned?: boolean;
 }
 
@@ -182,13 +184,15 @@ export function ApplyLineLyrics(data: LyricsData, UseRomanized: boolean = false)
   content.forEach((line, index, arr) => {
     const lineElem = document.createElement("div");
     lineElem.textContent = StripZeroWidth(
-      PickDisplayText(line, UseRomanized)
+      PickDisplayText(line, false)
     );
     lineElem.classList.add("line");
 
     if (isRtl(line.Text) && !lineElem.classList.contains("rtl")) {
       lineElem.classList.add("rtl");
     }
+
+    appendSubText(lineElem, line.TransliteratedText, line.TranslatedText);
 
     const nextLineStartTime = arr[index + 1]?.StartTime ?? 0;
 

@@ -39,6 +39,14 @@ function setRomanizationClass(hasTransliterations: boolean | undefined): void {
   }
 }
 
+function setTranslationClass(hasTranslations: boolean | undefined): void {
+  if (hasTranslations) {
+    PageContainer?.classList.add("Lyrics_TranslationAvailable");
+  } else {
+    PageContainer?.classList.remove("Lyrics_TranslationAvailable");
+  }
+}
+
 /**
  * Shared "lyrics are ready" presentation: toggle the romanization class, hide the
  * loader, publish the type, reveal the containers and view controls, and clear the
@@ -48,6 +56,7 @@ function presentLyrics(lyricsData: any): void {
   // Lyrics are in hand — end any 503 retry loop that was running for this track.
   LyricsQueueRetry.NotifyResolved(lyricsData?.uri);
   setRomanizationClass(lyricsData?.HasTransliterations);
+  setTranslationClass(lyricsData?.HasTranslations);
   HideLoaderContainer();
   $currentLyricsType.set(lyricsData.Type);
   SetShownNotice(null);

@@ -18,6 +18,7 @@ import {
 import { CreateLyricsContainer, DestroyAllLyricsContainers } from "./CreateLyricsContainer.ts";
 import { StripZeroWidth } from "./Utils/StripZeroWidth.ts";
 import { PickDisplayText } from "./Utils/PickDisplayText.ts";
+import { appendSubText } from "./Utils/AppendSubText.ts";
 import { initLyricsVirtualizer } from "../LyricsVirtualizer.ts";
 import { ApplySongCredits, MarkLastLineSide } from "./Credits/ApplyLyricsCredits.ts";
 import { EmitApply, EmitNotApplyed } from "./OnApply.ts";
@@ -31,6 +32,7 @@ export interface StaticLyricsData {
   Lines: Array<{
     Text: string;
     TransliteratedText?: string;
+    TranslatedText?: string;
   }>;
   offline?: boolean;
   classes?: string;
@@ -83,7 +85,7 @@ export function ApplyStaticLyrics(data: StaticLyricsData, UseRomanized: boolean 
     const lineElem = document.createElement("div");
 
     lineElem.textContent = StripZeroWidth(
-      PickDisplayText(line, UseRomanized)
+      PickDisplayText(line, false)
     );
 
     if (isRtl(line.Text) && !lineElem.classList.contains("rtl")) {
@@ -92,6 +94,8 @@ export function ApplyStaticLyrics(data: StaticLyricsData, UseRomanized: boolean 
 
     lineElem.classList.add("line");
     lineElem.classList.add("static");
+
+    appendSubText(lineElem, line.TransliteratedText, line.TranslatedText);
 
     // Add the line element to the lyrics object
     const staticLine: LyricsStatic = {

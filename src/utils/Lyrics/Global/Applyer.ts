@@ -15,7 +15,7 @@ import fetchLyrics, {
   type FetchLyricsResult,
 } from "../fetchLyrics.ts";
 import { BuildLyricsNotice, HasNotice, SetShownNotice, SyncNoLyricsLayout } from "../LyricsNotice.ts";
-import { ClearLyricsContentArrays, isRomanized } from "../lyrics.ts";
+import { ClearLyricsContentArrays } from "../lyrics.ts";
 import { PageContainer } from "../../../components/Pages/PageView.ts";
 import { CleanUpIsByCommunity } from "../Applyer/Credits/ApplyIsByCommunity.tsx";
 import { SpotifyPlayer } from "../../../components/Global/SpotifyPlayer.ts";
@@ -151,15 +151,12 @@ export default async function ApplyLyrics(lyricsContent: FetchLyricsResult): Pro
   SetShownNotice(null);
   SyncNoLyricsLayout();
 
-  const romanize = isRomanized;
-
   if (lyrics.Type === "Syllable") {
-    ApplySyllableLyrics(lyrics as any, romanize);
+    ApplySyllableLyrics(lyrics as any, false);
   } else if (lyrics.Type === "Line") {
-    ApplyLineLyrics(lyrics as any, romanize);
+    ApplyLineLyrics(lyrics as any, false);
   } else if (lyrics.Type === "Static") {
-    // Type assertion to StaticLyricsData since we've verified the Type is "Static"
-    ApplyStaticLyrics(lyrics as StaticLyricsData, romanize);
+    ApplyStaticLyrics(lyrics as StaticLyricsData, false);
   }
   // EmitApply normally hides it; this covers an applier that bailed early.
   HideLyricsSkeleton();

@@ -11,8 +11,10 @@ import ApplyLyrics, {
 import {
   addLinesEvListener,
   isRomanized,
+  isTranslationEnabled,
   removeLinesEvListener,
   setRomanizedStatus,
+  setTranslationStatus,
 } from "../../utils/Lyrics/lyrics.ts";
 import {
   CleanupScrollEvents,
@@ -87,6 +89,7 @@ export const Tooltips: {
   Close: TippyInstance | null;
   CompactModeToggle: TippyInstance | null;
   RomanizationToggle: TippyInstance | null;
+  TranslationToggle: TippyInstance | null;
   NowBarToggle: TippyInstance | null;
   FullscreenToggle: TippyInstance | null;
   CinemaView: TippyInstance | null;
@@ -97,6 +100,7 @@ export const Tooltips: {
   Close: null,
   CompactModeToggle: null,
   RomanizationToggle: null,
+  TranslationToggle: null,
   NowBarToggle: null,
   FullscreenToggle: null,
   CinemaView: null,
@@ -310,6 +314,14 @@ async function OpenPage(
   // the volume band — without it, turning the setting off would leave a gap.
   if ($showVolumeSlider.get()) {
     elem.classList.add("ShowVolumeSlider");
+  }
+
+  if (isRomanized) {
+    elem.classList.add("Lyrics_RomanizationEnabled");
+  }
+
+  if (isTranslationEnabled) {
+    elem.classList.add("Lyrics_TranslationEnabled");
   }
 
   ApplyExperimentClasses(elem);
@@ -539,6 +551,13 @@ function AppendViewControls(ReAppend: boolean = false) {
               : Icons.EnableRomanization
           }
         </button>
+        <button id="TranslationToggle" class="ViewControl">
+          ${
+            isTranslationEnabled
+              ? Icons.DisableTranslation
+              : Icons.EnableTranslation
+          }
+        </button>
         ${
           !Fullscreen.IsOpen &&
           !Fullscreen.CinemaViewOpen
@@ -678,29 +697,34 @@ function AppendViewControls(ReAppend: boolean = false) {
             content: isRomanized ? `Disable Romanization` : `Enable Romanization`,
           });
         }
-        romanizationToggle.addEventListener("click", async () => {
-          const songUri = SpotifyPlayer.GetUri();
-          if (!songUri) return;
-          PageContainer?.querySelector(
-            ".LyricsContainer .LyricsContent"
-          )?.classList.add("HiddenTransitioned");
-          // Flip first: if a fetch for this track is already in flight,
-          // fetchLyrics returns null and that fetch's own apply renders —
-          // it reads the flag at apply time, so it picks this change up.
+        romanizationToggle.addEventListener("click", () => {
           setRomanizedStatus(!isRomanized);
-
-          const lyrics = await fetchLyrics(songUri);
-          if (lyrics) await ApplyLyrics(lyrics);
-
-          setTimeout(() => {
-            AppendViewControls();
-            PageContainer?.querySelector(
-              ".LyricsContainer .LyricsContent"
-            )?.classList.remove("HiddenTransitioned");
-          }, 45);
+          PageContainer?.classList.toggle("Lyrics_RomanizationEnabled", isRomanized);
+          triggerRemeasureLV();
+          AppendViewControls();
         });
       } catch (err) {
         controlsLogger.warn("Failed to setup Romanization tooltip", err);
+      }
+    }
+
+    const translationToggle = elem.querySelector("#TranslationToggle");
+    if (translationToggle) {
+      try {
+        if (!isPip) {
+          Tooltips.TranslationToggle = createTooltip(translationToggle, {
+            ...Spicetify.TippyProps,
+            content: isTranslationEnabled ? `Disable Translation` : `Enable Translation`,
+          });
+        }
+        translationToggle.addEventListener("click", () => {
+          setTranslationStatus(!isTranslationEnabled);
+          PageContainer?.classList.toggle("Lyrics_TranslationEnabled", isTranslationEnabled);
+          triggerRemeasureLV();
+          AppendViewControls();
+        });
+      } catch (err) {
+        controlsLogger.warn("Failed to setup Translation tooltip", err);
       }
     }
 
