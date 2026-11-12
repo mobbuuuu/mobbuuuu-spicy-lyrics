@@ -38,11 +38,6 @@ function getShardColors(baseColor: string): { shardColor: string; accentColor: s
 }
 
 export async function applyAeroShardsBackground(host: HTMLElement): Promise<void> {
-  if (!navigator.gpu) {
-    shardsLogger.warn("WebGPU not available — cannot render Aero Shards background");
-    return;
-  }
-
   removeAeroShards();
 
   const container = document.createElement("div");
