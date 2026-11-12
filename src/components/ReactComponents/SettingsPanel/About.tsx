@@ -94,7 +94,7 @@ export default function About({ status }: { status: UpdateStatus }) {
   return (
     <div className="sl-sp-about">
       <div className="sl-sp-about-hero">
-        <span className="sl-sp-about-wordmark">Spicy Lyrics</span>
+        <span className="sl-sp-about-wordmark">Mobbuuuu Spicy Lyrics</span>
         <div className="sl-sp-about-status-row">
           <span className="sl-sp-about-version">Version {version}</span>
           {(status === "latest" || status === "outdated") && (
