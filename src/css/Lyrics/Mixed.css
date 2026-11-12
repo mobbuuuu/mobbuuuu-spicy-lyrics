@@ -528,6 +528,33 @@
 
 #SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .line.bg-line {
   margin: -1cqw 0 1cqw !important;
+  transition: opacity 0.5s ease-out, filter 0.5s ease-out, transform 0.5s ease-out;
+}
+
+/* BG lines hidden before their group is active. */
+#SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .line.bg-line.NotSung:not(.GroupActive) {
+  opacity: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* BG lines fade in when their group becomes active. */
+#SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .line.bg-line.GroupActive {
+  opacity: var(--Vocal-NotSung-opacity);
+}
+
+#SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .line.bg-line.Active {
+  opacity: 1;
+}
+
+/* BG lines drift away once sung, same as lead lines. */
+#SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .line.bg-line.Sung {
+  opacity: 0 !important;
+  filter: blur(8px);
+  transform: translateY(-15px);
 }
 
 #SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .line.musical-line .dotGroup {
