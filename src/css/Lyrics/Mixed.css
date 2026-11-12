@@ -391,6 +391,8 @@
 #SpicyLyricsPage.SpicyRenderer .LyricsContainer .LyricsContent .line.Sung {
   opacity: var(--Vocal-Sung-opacity);
   --gradient-position: 100% !important;
+  filter: blur(4px);
+  transform: translateY(-8px);
 }
 
 /* #SpicyLyricsPage.SpicyRenderer.Podcast .LyricsContainer .LyricsContent .line.Sung {
