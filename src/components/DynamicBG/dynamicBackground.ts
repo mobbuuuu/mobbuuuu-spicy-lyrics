@@ -408,6 +408,10 @@ export default async function ApplyDynamicBackground(host: HTMLElement, key: str
   if (!track.coverUri) return;
   if (style === "color") return applyColorBackground(host, track);
   if (style === "artist" || style === "cover") return applyImageBackground(host, track, style);
+  if (style === "shards") {
+    const { applyAeroShardsBackground } = await import("./AeroShards/applyAeroShards.ts");
+    return applyAeroShardsBackground(host);
+  }
   return applyKawarpBackground(host, key, track);
 }
 
@@ -675,6 +679,7 @@ Global.Event.listen("playback:songchange", () => {
 function reapplyPageBackground() {
   const contentBox = PageContainer?.querySelector<HTMLElement>(".ContentBox");
   if (!contentBox) return;
+  import("./AeroShards/applyAeroShards.ts").then(m => m.removeAeroShards()).catch(() => {});
   if (!isRefined()) {
     KawarpMap.get(PAGE_BACKGROUND_KEY)?.dispose();
     KawarpMap.delete(PAGE_BACKGROUND_KEY);

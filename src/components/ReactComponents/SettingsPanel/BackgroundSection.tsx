@@ -2,9 +2,12 @@ import { useStore } from "@nanostores/react";
 import {
   $backgroundBlur,
   $backgroundStyle,
+  $shardsColor,
+  $shardsColorMode,
   $showNpvDynamicBg,
   BACKGROUND_STYLES,
   type BackgroundStyle,
+  type ShardsColorMode,
 } from "../../../utils/stores.ts";
 import { $experiment, getExperiment } from "../../../utils/experiments.ts";
 import { Select, Slider, Toggle } from "./components.tsx";
@@ -16,6 +19,7 @@ export const BACKGROUND_STYLE_LABELS: Record<BackgroundStyle, string> = {
   artist: "Artist Image",
   cover: "Cover Art",
   color: "Cover Colors",
+  shards: "Aero Shards (WebGPU)",
   none: "None (Transparent)",
 };
 
@@ -70,6 +74,50 @@ const groups: GroupDef[] = [
             unit="px"
             onChange={(v) => $backgroundBlur.set(v)}
             disabled={disabled}
+          />
+        ),
+      },
+      {
+        id: "shardsColorMode",
+        label: "Shards Color",
+        description: "Auto picks colors from the album art. Manual lets you choose a fixed color.",
+        keywords: "aero shards webgpu color auto manual",
+        useDisabled: () => {
+          const style = useStore($backgroundStyle);
+          return style !== "shards" && "Only applies to Aero Shards.";
+        },
+        Control: ({ disabled, label }) => (
+          <Select
+            label={label}
+            value={useStore($shardsColorMode)}
+            options={["auto", "manual"] as ShardsColorMode[]}
+            labels={["Auto (Album Art)", "Manual"]}
+            onChange={(v) => $shardsColorMode.set(v as ShardsColorMode)}
+            disabled={disabled}
+          />
+        ),
+      },
+      {
+        id: "shardsColor",
+        label: "Shards Manual Color",
+        description: "The base color used when Shards Color is set to Manual.",
+        keywords: "aero shards webgpu color picker manual hex",
+        useDisabled: () => {
+          const style = useStore($backgroundStyle);
+          const mode = useStore($shardsColorMode);
+          if (style !== "shards") return "Only applies to Aero Shards.";
+          if (mode !== "manual") return "Set Shards Color to Manual first.";
+          return false;
+        },
+        Control: ({ disabled, label }) => (
+          <input
+            type="color"
+            className="sl-sp-select"
+            aria-label={label}
+            value={useStore($shardsColor)}
+            onChange={(e) => $shardsColor.set(e.currentTarget.value)}
+            disabled={disabled}
+            style={{ width: 48, height: 32, padding: 2, cursor: disabled ? "default" : "pointer" }}
           />
         ),
       },

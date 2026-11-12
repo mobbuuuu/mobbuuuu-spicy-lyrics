@@ -73,11 +73,15 @@ export function persistAtom<T>(key: string, defaultValue: T) {
 
 // Setting atoms (persisted)
 // "none" paints nothing, so a theme's own background (an image, say) shows through.
-export type BackgroundStyle = "dynamic" | "artist" | "cover" | "color" | "none";
-export const BACKGROUND_STYLES: readonly BackgroundStyle[] = ["dynamic", "artist", "cover", "color", "none"];
+export type BackgroundStyle = "dynamic" | "artist" | "cover" | "color" | "shards" | "none";
+export const BACKGROUND_STYLES: readonly BackgroundStyle[] = ["dynamic", "artist", "cover", "color", "shards", "none"];
 export const $backgroundStyle = persistAtom<BackgroundStyle>("backgroundStyle", "dynamic");
 // Blur radius (px) for the two image styles, "artist" and "cover".
 export const $backgroundBlur = persistAtom<number>("backgroundBlur", 0);
+// Aero Shards: "auto" picks color from album palette, "manual" uses the user's hex.
+export type ShardsColorMode = "auto" | "manual";
+export const $shardsColorMode = persistAtom<ShardsColorMode>("shardsColorMode", "auto");
+export const $shardsColor = persistAtom<string>("shardsColor", "#891a1a");
 export const $simpleLyricsMode = persistAtom<boolean>("simpleLyricsMode", false);
 export const $minimalLyricsMode = persistAtom<boolean>("minimalLyricsMode", false);
 // Shows a word sung in syllables as one word when its parts line up evenly.
