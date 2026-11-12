@@ -403,15 +403,15 @@ export default async function ApplyDynamicBackground(host: HTMLElement, key: str
     return;
   }
 
+  if (style === "shards") {
+    const { applyAeroShardsBackground } = await import("./AeroShards/applyAeroShards.ts");
+    return applyAeroShardsBackground(host);
+  }
   const track = snapshotTrack(host, key, style);
   // Nothing to paint, and a fetch of "" would load the app page itself.
   if (!track.coverUri) return;
   if (style === "color") return applyColorBackground(host, track);
   if (style === "artist" || style === "cover") return applyImageBackground(host, track, style);
-  if (style === "shards") {
-    const { applyAeroShardsBackground } = await import("./AeroShards/applyAeroShards.ts");
-    return applyAeroShardsBackground(host);
-  }
   return applyKawarpBackground(host, key, track);
 }
 
